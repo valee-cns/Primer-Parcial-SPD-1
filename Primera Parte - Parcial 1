@@ -1,0 +1,309 @@
+// C++ code
+//Alumna: Cisneros Valentina Vanesa
+
+#define A 12
+#define B 13
+#define C 7
+#define D 8
+#define E 9
+#define F 11
+#define G 10
+#define SUMA 6
+#define RESET 5
+#define RESTA 4
+#define ADELANTE A1
+#define ATRAS A2
+
+void digito(int numero);
+void mostrarNumero(int decena, int unidad);
+int contador;
+int decena;
+int unidad;
+int posSuma;
+int posResta;
+int posReset;
+
+void setup()
+{
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(ADELANTE, OUTPUT);
+  pinMode(ATRAS, OUTPUT);
+  pinMode(SUMA, INPUT_PULLUP);
+  pinMode(RESET, INPUT_PULLUP);
+  pinMode(RESTA, INPUT_PULLUP);
+  contador = 0;
+  decena = 0;
+  unidad = 0;
+  posSuma = 1;
+  posResta = 1;
+  posReset = 1;
+}
+
+void loop()
+{
+  
+  int boton = keyPressed();
+  
+  if (boton == SUMA)
+  {
+    contador = contador + 1;
+    
+    if (contador > 99)
+    {
+      contador = 0;
+    }
+  }
+  
+  if (boton == RESTA)
+  {
+    contador = contador - 1;
+    
+    if (contador < 0)
+    {
+      contador = 0;
+    }
+  }
+  
+  if (boton == RESET)
+  {
+    contador = 0;
+  }
+  
+  decena = contador / 10;
+  unidad = contador % 10;
+  
+  mostrarNumero(decena, unidad);
+}
+
+/*
+La función keyPressed() verifica que el botón utilice su
+función de presionado sólo una vez, es decir que si aunque
+se mantenga presionado sólo va a activar la suma/resta
+una única vez. Esto sirve también para evitar que la suma/resta
+se active más de una vez en caso de que el usuario tarde más
+en presionar y soltar el botón de lo que tarda el loop en 
+repetirse.
+La función retorna cuál es el botón presionado.
+*/
+int keyPressed(void)
+{
+  int estadoSuma = digitalRead(SUMA);
+  int estadoResta = digitalRead(RESTA);
+  int estadoReset = digitalRead(RESET);
+  
+  if (estadoSuma == 1)
+  {
+    posSuma = 1;
+  }
+  
+  if (estadoResta == 1)
+  {
+    posResta = 1;
+  }
+  
+  if (estadoReset == 1)
+  {
+    posReset = 1;
+  }
+  
+  if (estadoSuma == 0 && estadoSuma != posSuma)
+  {
+    posSuma = estadoSuma;
+    return SUMA;
+  }
+  
+  if (estadoResta == 0 && estadoResta != posResta)
+  {
+    posResta = estadoResta;
+    return RESTA;
+  }
+  
+  if (estadoReset == 0 && estadoReset != posReset)
+  {
+    posReset = estadoReset;
+    return RESET;
+  }
+  
+  return 0;
+}
+
+/*
+Esta es la función de la multiplexación, recibe por parámetro
+el número que va en la decena y el número que va en la unidad.
+crea una constante de tiempo para llevar a cabo la 
+multiplexación y luego inicia.
+prende el display que corresponde a la unidad, llama a la
+función para mostrar el respectivo número, deja pasar el 
+50ms, apaga ese display y prende el display de las decenas.
+Repite la misma secuencia que para el anterior display
+y luego lo apaga.
+De esta forma se repite constantemente el encendido y apagado de 
+los displays y genera la ilusión de que están encendidos al 
+mismo tiempo.
+*/
+
+void mostrarNumero(int uni, int dec)
+{
+  int tiempo = 50;
+  
+  digitalWrite(ATRAS, HIGH);
+  digito(uni);
+  delay(tiempo);
+  
+  digitalWrite(ATRAS, LOW);
+  digitalWrite(ADELANTE, HIGH);
+  digito(dec);
+  delay(tiempo);
+  
+  digitalWrite(ADELANTE, LOW);
+}
+
+
+/* 
+La función digito() sirve para tener codeados todos los 
+digitos posibles de utilizar en los displays es decir del
+0 al 9 para que cuando los necesite, sólo llame a la función
+ingresando por parámetro el número que necesito mostrar en
+los displays
+*/
+void digito(int numero)
+{
+  
+  digitalWrite(A, LOW);
+  digitalWrite(B, LOW);
+  digitalWrite(C, LOW);
+  digitalWrite(D, LOW);
+  digitalWrite(E, LOW);
+  digitalWrite(F, LOW);
+  digitalWrite(G, LOW);
+  
+  switch(numero)
+  {
+    
+    case 0:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 1);
+      digitalWrite(E, 1);
+      digitalWrite(F, 1);
+      digitalWrite(G, 0);
+      break;
+    }
+    
+    case 1:
+    {
+      digitalWrite(A, 0);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 0);
+      digitalWrite(E, 0);
+      digitalWrite(F, 0);
+      digitalWrite(G, 0);
+      break;
+    }
+    
+    case 2:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 0);
+      digitalWrite(D, 1);
+      digitalWrite(E, 1);
+      digitalWrite(F, 0);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 3:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 1);
+      digitalWrite(E, 0);
+      digitalWrite(F, 0);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 4:
+    {
+      digitalWrite(A, 0);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 0);
+      digitalWrite(E, 0);
+      digitalWrite(F, 1);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 5:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 0);
+      digitalWrite(C, 1);
+      digitalWrite(D, 1);
+      digitalWrite(E, 0);
+      digitalWrite(F, 1);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 6:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 0);
+      digitalWrite(C, 1);
+      digitalWrite(D, 1);
+      digitalWrite(E, 1);
+      digitalWrite(F, 1);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 7:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 0);
+      digitalWrite(E, 0);
+      digitalWrite(F, 0);
+      digitalWrite(G, 0);
+      break;
+    }
+    
+    case 8:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 1);
+      digitalWrite(E, 1);
+      digitalWrite(F, 1);
+      digitalWrite(G, 1);
+      break;
+    }
+    
+    case 9:
+    {
+      digitalWrite(A, 1);
+      digitalWrite(B, 1);
+      digitalWrite(C, 1);
+      digitalWrite(D, 0);
+      digitalWrite(E, 0);
+      digitalWrite(F, 1);
+      digitalWrite(G, 1);
+      break;
+    }
+  }
+}
